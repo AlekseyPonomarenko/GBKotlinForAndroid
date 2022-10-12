@@ -2,7 +2,8 @@ package ru.ponomarenko.gbkotlinforandroid
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import ru.ponomarenko.gbkotlinforandroid.view.weatherlist.WeatherListFragment
+import ru.ponomarenko.gbkotlinforandroid.ui.main.MainFragment
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -11,7 +12,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.container, WeatherListFragment.newInstance())
+                .replace(R.id.container, MainFragment.newInstance())
                 .commitNow()
         }
     }
