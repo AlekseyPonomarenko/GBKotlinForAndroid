@@ -10,26 +10,37 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.snackbar.Snackbar
 import ru.ponomarenko.gbkotlinforandroid.R
 import ru.ponomarenko.gbkotlinforandroid.databinding.FragmentMainBinding
+import ru.ponomarenko.gbkotlinforandroid.model.Weather
+import ru.ponomarenko.gbkotlinforandroid.view.details.DetailsFragment
 import ru.ponomarenko.gbkotlinforandroid.viewmodel.MainViewModel
 import ru.ponomarenko.gbkotlinforandroid.viewmodel.AppState
 
 class MainFragment : Fragment() {
-
     private var _binding: FragmentMainBinding? = null
     private val binding get() = _binding!!
-
     private lateinit var viewModel: MainViewModel
-    private val adapter = MainFragmentAdapter()
+    private val adapter = MainFragmentAdapter(object : OnItemViewClickListener {
+        override fun onItemViewClick(weather: Weather) {
+            val manager = activity?.supportFragmentManager
+            if (manager != null) {
+                val bundle = Bundle()
+                bundle.putParcelable(DetailsFragment.BUNDLE_EXTRA, weather)
+                manager.beginTransaction()
+                    .replace(R.id.container, DetailsFragment.newInstance(bundle))
+                    .addToBackStack("")
+                    .commitAllowingStateLoss()
+            }
+        }
+    })
     private var isDataSetRus: Boolean = true
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+
+    savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMainBinding.inflate(inflater, container, false)
         return binding.getRoot()
     }
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.mainFragmentRecyclerView.adapter = adapter
@@ -69,7 +80,11 @@ class MainFragment : Fragment() {
             }
         }
     }
+    interface OnItemViewClickListener {
+        fun onItemViewClick(weather: Weather)
+    }
     companion object {
+
         fun newInstance() =
             MainFragment()
     }
