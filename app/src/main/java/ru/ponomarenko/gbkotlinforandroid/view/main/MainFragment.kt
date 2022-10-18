@@ -21,12 +21,11 @@ class MainFragment : Fragment() {
     private lateinit var viewModel: MainViewModel
     private val adapter = MainFragmentAdapter(object : OnItemViewClickListener {
         override fun onItemViewClick(weather: Weather) {
-            val manager = activity?.supportFragmentManager
-            if (manager != null) {
-                val bundle = Bundle()
-                bundle.putParcelable(DetailsFragment.BUNDLE_EXTRA, weather)
-                manager.beginTransaction()
-                    .replace(R.id.container, DetailsFragment.newInstance(bundle))
+            activity?.supportFragmentManager?.apply {
+                beginTransaction()
+                    .add(R.id.container, DetailsFragment.newInstance(Bundle().apply {
+                        putParcelable(DetailsFragment.BUNDLE_EXTRA, weather)
+                    }))
                     .addToBackStack("")
                     .commitAllowingStateLoss()
             }
@@ -50,16 +49,14 @@ class MainFragment : Fragment() {
             renderData(it) })
         viewModel.getWeatherFromLocalSourceRus()
     }
-    private fun changeWeatherDataSet() {
-        if (isDataSetRus) {
-            viewModel.getWeatherFromLocalSourceWorld()
-            binding.mainFragmentFAB.setImageResource(R.drawable.ic_earth)
-        } else {
-            viewModel.getWeatherFromLocalSourceRus()
-            binding.mainFragmentFAB.setImageResource(R.drawable.ic_russia)
-        }
-        isDataSetRus = !isDataSetRus
-    }
+    private fun changeWeatherDataSet() = if (isDataSetRus) {
+        viewModel.getWeatherFromLocalSourceWorld()
+        binding.mainFragmentFAB.setImageResource(R.drawable.ic_earth)
+    } else {
+        viewModel.getWeatherFromLocalSourceRus()
+        binding.mainFragmentFAB.setImageResource(R.drawable.ic_russia)
+    }.also { isDataSetRus = !isDataSetRus }
+
     private fun renderData(appState: AppState) {
         when (appState) {
             is AppState.Success -> {
